@@ -1,8 +1,8 @@
 {
-	"name": "cloudflare-agent-starter",
-	"version": "1.0.0",
-	"description": "",
-	"type": "module",
+	"name": "cf_ai_gatekeeper",
+  "version": "1.0.0",
+  "description": "A context-aware AI agent that bridges the gap between vague user reports and actionable engineering tasks. By referencing your repository's internal documentation and AGENTS.md standards, IssueArchitect ensures every ticket is structured, labeled, and complete before it ever hits the backlog.",
+  "type": "module",
 	"private": true,
 	"scripts": {
 		"dev": "vite dev",
@@ -12,14 +12,19 @@
 		"types": "wrangler types env.d.ts --include-runtime false",
 		"format": "prettier --write .",
 		"check": "prettier . --check && biome lint && tsc",
-		"postinstall": "patch-package"
+		"postinstall": "patch-package",
+		"prepare": "husky",
+		"lint": "eslint .",
+		"cm": "cz"
 	},
 	"keywords": [
 		"cloudflare",
 		"ai",
-		"agents"
+		"agents",
+		"github",
+		"issues"
 	],
-	"author": "",
+	"author": "Hammad Asghar",
 	"license": "MIT",
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.10",
@@ -37,7 +42,16 @@
 		"typescript": "^5.9.3",
 		"vite": "^7.3.0",
 		"vitest": "3.2.4",
-		"wrangler": "^4.62.0"
+		"wrangler": "^4.62.0",
+		"@commitlint/cli": "^20.4.1",
+		"@commitlint/config-conventional": "^20.4.1",
+		"@eslint/js": "^9.39.2",
+		"commitizen": "^4.3.1",
+		"cz-conventional-changelog": "^3.3.0",
+		"eslint": "^9.39.2",
+		"husky": "^9.1.7",
+		"lint-staged": "^16.2.7",
+		"typescript-eslint": "^8.54.0"
 	},
 	"dependencies": {
 		"@ai-sdk/openai": "^3.0.2",
@@ -58,5 +72,15 @@
 		"streamdown": "^1.6.10",
 		"tailwind-merge": "^3.4.0",
 		"workers-ai-provider": "^3.0.2"
+	},
+	"config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+	},
+	"husky": {
+		"hooks": {
+		"prepare-commit-msg": "exec < /dev/tty && npx cz --hook || true"
+		}
 	}
 }
