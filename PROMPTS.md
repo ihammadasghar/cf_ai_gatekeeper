@@ -6,6 +6,51 @@
 
 ---
 
+### [2026-02-05] | Task: Generate general_task.md template
+
+**Status:** ✅ Completed
+**Agent Used:** Gemini 3
+
+**The Prompt:**
+
+> "Could you make a standard general task issue template for my github repository?"
+
+**The Result/Outcome:**
+
+* Added `general_task.md`
+
+---
+
+### [2026-02-05] | Task: Generate feature_request.md template
+
+**Status:** ✅ Completed
+**Agent Used:** Gemini 3
+
+**The Prompt:**
+
+> "Could you make a standard feature request issue template for my github repository?"
+
+**The Result/Outcome:**
+
+* Added `feature_request.md`
+
+---
+
+### [2026-02-05] | Task: Generates bug_report.md template
+
+**Status:** ✅ Completed
+**Agent Used:** Gemini 3
+
+**The Prompt:**
+
+> "Could you make a standard bug report issue template for my github repository?"
+
+**The Result/Outcome:**
+
+* Added `bug_report.md`
+
+---
+
 ### [2026-02-04] | Task: Generate AGENTS.md for controlled coding agents use
 
 **Status:** ✅ Completed
