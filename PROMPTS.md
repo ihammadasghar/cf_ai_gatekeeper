@@ -17,7 +17,7 @@
 
 **The Result/Outcome:**
 
-* Added `general_task.md`
+- Added `general_task.md`
 
 ---
 
@@ -32,7 +32,7 @@
 
 **The Result/Outcome:**
 
-* Added `feature_request.md`
+- Added `feature_request.md`
 
 ---
 
@@ -47,7 +47,7 @@
 
 **The Result/Outcome:**
 
-* Added `bug_report.md`
+- Added `bug_report.md`
 
 ---
 
@@ -60,14 +60,15 @@
 
 > "Create a AGENTS.md documentation for my gatekeeper ai project
 > The core tech stack:
+>
 > - Runtime: Node
 > - Frameworks: cloudflare agents, github apps
-> 
+>
 > Package management & tooling:
 > Package manager: pnpm
 > Linter: Eslint
 > Formater: Prettier
-> 
+>
 > Architecture & File conventions:
 > Pattern: monorepo
 > Directory structure:
@@ -85,7 +86,7 @@
 > ├── package.json               <-- The "Tools": agents-sdk, wrangler, etc.
 > ├── tsconfig.json              <-- The "Language": TypeScript config
 > └── README.md                  <-- The "Face": How to use your cool new tool
-> 
+>
 > Naming:
 > | Type | Convention | Example |
 > |------|------------|---------|
@@ -94,10 +95,10 @@
 > | Constants | UPPER_SNAKE_CASE | `BASE_API_URL` |
 > | React Components | PascalCase.tsx | `TopBanner.tsx` |
 > | Reducers | camelCaseReducer.ts | `employeeReducer.ts` |
-> 
+>
 > Integration & Environment:
 > Deployment: wrangler
-> 
+>
 > Constraints:
 > TypeScript strict mode; never use any
 > 2 spaces indentation, single quotes, semicolons required
@@ -108,7 +109,7 @@
 
 **The Result/Outcome:**
 
-* Added `AGENTS.md`
+- Added `AGENTS.md`
 
 ---
 
@@ -123,7 +124,7 @@
 
 **The Result/Outcome:**
 
-* Added `PROMPTS.md`
+- Added `PROMPTS.md`
 
 ---
 
@@ -140,6 +141,6 @@
 
 **The Result/Outcome:**
 
-* [List specific files changed]
-* [List any bugs or 'hallucinations' that occurred]
-* [Link to commit hash if applicable]
+- [List specific files changed]
+- [List any bugs or 'hallucinations' that occurred]
+- [Link to commit hash if applicable]
