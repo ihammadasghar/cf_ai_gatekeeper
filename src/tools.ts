@@ -8,6 +8,59 @@ import { z } from "zod/v3";
 import type { Chat } from "./server";
 import { getCurrentAgent } from "agents";
 import { scheduleSchema } from "agents/schedule";
+import { env } from "cloudflare:workers";
+
+/**
+ * GitHub issue drafting tool that requires human confirmation
+ * This tool uses the GitHub API to create issues based on user input
+ * It also leverages an AI model to format the issue according to a template
+ * When invoked, this will present a confirmation dialog to the user
+ */
+const draftTicketForGithubRepo = tool({
+  description:
+    "create a ticket in a github repo with a given title and description",
+  inputSchema: z.object({ description: z.string() }),
+  execute: async ({ description }) => {
+    console.log(`Creating a github ticket with description: ${description}`);
+
+    const headers = {
+      Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+      Accept: "application/vnd.github.v3.raw",
+      "User-Agent": "Cloudflare-Worker-Gatekeeper"
+    };
+
+    const [agentsMd, template] = await Promise.all([
+      fetch(`${env.GITHUB_REPO_URL}/AGENTS.md`, { headers }).then((res) =>
+        res.text()
+      ),
+      fetch(`${env.GITHUB_REPO_URL}/.github/ISSUE_TEMPLATE/general_task.md`, {
+        headers
+      }).then((res) => res.text())
+    ]);
+
+    const response = await env.AI.run(
+      "@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+      {
+        messages: [
+          {
+            role: "system",
+            content: `You are 'Gatekeeper.ai'. Your job is to draft GitHub issues.
+          RULES FROM AGENTS.MD:
+          ${agentsMd}
+          
+          REQUIRED TEMPLATE:
+          ${template}
+          
+          If the user's input is sufficient, provide the final Markdown. 
+          If info is missing (per the rules), politely ask for it.`
+          },
+          { role: "user", content: description }
+        ]
+      }
+    );
+    return response;
+  }
+});
 
 /**
  * Weather information tool that requires human confirmation
@@ -117,7 +170,8 @@ export const tools = {
   getLocalTime,
   scheduleTask,
   getScheduledTasks,
-  cancelScheduledTask
+  cancelScheduledTask,
+  draftTicketForGithubRepo
 } satisfies ToolSet;
 
 /**

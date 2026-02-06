@@ -7,6 +7,8 @@ declare namespace Cloudflare {
 	}
 	interface Env {
 		OPENAI_API_KEY: string;
+		GITHUB_TOKEN: string;
+		GITHUB_REPO_URL: string;
 		Chat: DurableObjectNamespace<import("./src/server").Chat>;
 		AI: Ai;
 	}

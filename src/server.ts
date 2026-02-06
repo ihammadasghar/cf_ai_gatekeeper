@@ -13,12 +13,14 @@ import {
   createUIMessageStreamResponse,
   type ToolSet
 } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { createWorkersAI } from "workers-ai-provider";
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
-// import { env } from "cloudflare:workers";
+import { env } from "cloudflare:workers";
 
-const model = openai("gpt-4o-2024-11-20");
+const workersai = createWorkersAI({ binding: env.AI });
+
+const model = workersai("@cf/meta/llama-3.2-3b-instruct");
 // Cloudflare AI Gateway
 // const openai = createOpenAI({
 //   apiKey: env.OPENAI_API_KEY,
@@ -87,6 +89,8 @@ If the user asks to schedule a task, use the schedule tool to schedule the task.
     return createUIMessageStreamResponse({ stream });
   }
   async executeTask(description: string, _task: Schedule<string>) {
+    void _task;
+
     await this.saveMessages([
       ...this.messages,
       {
@@ -111,6 +115,8 @@ If the user asks to schedule a task, use the schedule tool to schedule the task.
  */
 export default {
   async fetch(request: Request, env: Env, _ctx: ExecutionContext) {
+    void _ctx;
+
     const url = new URL(request.url);
 
     if (url.pathname === "/check-open-ai-key") {
