@@ -6,6 +6,58 @@
 
 ---
 
+### [2026-02-09] | Task: Add the UI component for the top bar
+
+**Status:** ✅ Completed
+**Agent Used:** Claude 4.5
+
+**The Prompt:**
+
+> "Could you add a react component called RepositoryInfo which will be a bar at the top of all existing sections, at the very top of the page. It will contain a text logo and basic information about the repository. Also please move the debug mode, night mode toggles to the right side of this bar. fetch all the open issues and it will list them. This component will be added to the right of the chat. Please make sure, to follow the already existing theme and reuse components/code. The functionality for fetching the repository info already exists in server.ts"
+
+NOTE: `app.tsx`, `server.ts` and `GithubIssues.tsx` files were given as context, later the model as for context as necessary
+
+**The Result/Outcome:**
+
+- Added `src/component/github-issues/GitHubIssueDetails.tsx`
+
+---
+
+### [2026-02-09] | Task: Add the UI component for viewing github issue details
+
+**Status:** ✅ Completed
+**Agent Used:** Claude 4.5
+
+**The Prompt:**
+
+> "Could you add a section right next to the github issue list where whenever we click on a github issue from the list, we can view the details of the issue."
+
+NOTE: `app.tsx`, `server.ts` and `GithubIssues.tsx` files were given as context, later the model as for context as necessary
+
+**The Result/Outcome:**
+
+- Added `src/component/github-issues/GitHubIssueDetails.tsx`
+
+---
+
+### [2026-02-09] | Task: Add the UI component for the open issues list
+
+**Status:** ✅ Completed
+**Agent Used:** Claude 4.5
+
+**The Prompt:**
+
+> "Could you add a react component call GitHubIssues which will fetch all the open issues and it will list them. This component will be added to the right of the chat. Please make sure, to follow the already existing theme and reuse components/code."
+
+NOTE: `app.tsx` and `server.ts` files were given as context, later the model as for context as necessary
+
+**The Result/Outcome:**
+
+- Added `src/component/github-issues/GitHubIssues.tsx`
+
+
+---
+
 ### [2026-02-09] | Task: Generate clear prompts for the agent and good descriptions for the tool
 
 **Status:** ✅ Completed

@@ -21,3 +21,13 @@ export interface IssueOperationResult {
   data?: GitHubIssue[];
   error?: string;
 }
+
+export interface RepositoryData {
+  owner: string;
+  repo: string;
+  url: string;
+  description?: string;
+  isPrivate: boolean;
+  stars: number;
+  language?: string;
+}
