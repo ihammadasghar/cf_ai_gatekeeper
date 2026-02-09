@@ -1,7 +1,7 @@
-import { Card } from '@/components/card/Card';
-import { Button } from '@/components/button/Button';
-import { MemoizedMarkdown } from '@/components/memoized-markdown';
-import { XIcon } from '@phosphor-icons/react';
+import { Card } from "@/components/card/Card";
+import { Button } from "@/components/button/Button";
+import { MemoizedMarkdown } from "@/components/memoized-markdown";
+import { XIcon } from "@phosphor-icons/react";
 
 interface GitHubIssue {
   id: number;
@@ -50,14 +50,14 @@ export const GitHubIssueDetails = ({
   }
 
   const createdDate = new Date(issue.created_at).toLocaleDateString([], {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+    year: "numeric",
+    month: "short",
+    day: "numeric"
   });
   const updatedDate = new Date(issue.updated_at).toLocaleDateString([], {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
+    year: "numeric",
+    month: "short",
+    day: "numeric"
   });
 
   return (
@@ -74,22 +74,24 @@ export const GitHubIssueDetails = ({
               </div>
             )}
             <h2 className="font-semibold text-base break-words line-clamp-2">
-              {isPreview ? (
-                isEditPreview ? `#${issue.number}: ${issue.title}` : issue.title
-              ) : (
-                `#${issue.number}: ${issue.title}`
-              )}
+              {isPreview
+                ? isEditPreview
+                  ? `#${issue.number}: ${issue.title}`
+                  : issue.title
+                : `#${issue.number}: ${issue.title}`}
             </h2>
             <div className="flex items-center gap-2 mt-2">
               <span
                 className={`text-xs px-2 py-1 rounded-full font-medium ${
-                  issue.state === 'open'
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                    : 'bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300'
+                  issue.state === "open"
+                    ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                    : "bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300"
                 }`}
               >
                 {isPreview
-                  ? (isEditPreview ? "Updating" : "Draft")
+                  ? isEditPreview
+                    ? "Updating"
+                    : "Draft"
                   : issue.state.charAt(0).toUpperCase() + issue.state.slice(1)}
               </span>
             </div>

@@ -50,7 +50,6 @@ Issue Arcitect AI is a GitHub App powered by Cloudflare Agents. Its primary job 
 | **Constants**             | `UPPER_SNAKE_CASE` | `MAX_RETRIES`     |
 | **Files**                 | `kebab-case.ts`    | `github-logic.ts` |
 
-
 ---
 
 ## 🤖 Agent Instructions (Behavioral)

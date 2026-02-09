@@ -5,7 +5,10 @@ import { isStaticToolUIPart } from "ai";
 import { useAgentChat } from "@cloudflare/ai-chat/react";
 import type { UIMessage } from "@ai-sdk/react";
 import type { tools } from "./tools";
-import { parseToolCompletionMessage, getConfirmationModalProps } from "@/lib/tool-message-parser";
+import {
+  parseToolCompletionMessage,
+  getConfirmationModalProps
+} from "@/lib/tool-message-parser";
 import { createPreviewIssue } from "@/lib/tool-preview";
 
 // Component imports
@@ -19,7 +22,6 @@ import { ToolInvocationCard } from "@/components/tool-invocation-card/ToolInvoca
 import { GitHubIssues } from "@/components/github-issues/GitHubIssues";
 import { GitHubIssueDetails } from "@/components/github-issues/GitHubIssueDetails";
 import { RepositoryInfo } from "@/components/repo-info/RepositoryInfo";
-import { ConfirmationModal } from "@/components/confirmation-modal/ConfirmationModal";
 
 // Icon imports
 import {
@@ -54,12 +56,12 @@ export default function Chat() {
     isOpen: boolean;
     title: string;
     message: string;
-    type: 'success' | 'info' | 'warning' | 'error';
+    type: "success" | "info" | "warning" | "error";
   }>({
     isOpen: false,
-    title: '',
-    message: '',
-    type: 'success'
+    title: "",
+    message: "",
+    type: "success"
   });
   // State for tracking edits to the preview
   const [previewEdits, setPreviewEdits] = useState<{
@@ -150,19 +152,19 @@ export default function Chat() {
   // Monitor tool completions and refresh issues list
   useEffect(() => {
     const lastMessage = agentMessages[agentMessages.length - 1];
-    
+
     if (lastMessage?.role === "assistant" && lastMessage.parts) {
       for (const part of lastMessage.parts) {
         if (part.type === "text") {
           const result = parseToolCompletionMessage(part.text);
           const modalProps = getConfirmationModalProps(result);
-          
+
           if (modalProps) {
             setConfirmationModal({
               isOpen: true,
               ...modalProps
             });
-            setRefreshTrigger(prev => prev + 1);
+            setRefreshTrigger((prev) => prev + 1);
           }
         }
       }
@@ -184,7 +186,7 @@ export default function Chat() {
   // Extract preview issue from pending tool confirmation
   let previewIssue: GitHubIssue | null = null;
   let isEditPreview = false;
-  
+
   if (pendingToolCallConfirmation) {
     const pendingMessage = agentMessages.find((m: UIMessage) =>
       m.parts?.some(
@@ -275,14 +277,6 @@ export default function Chat() {
   return (
     <div className="h-screen w-full flex flex-col bg-fixed overflow-hidden">
       <HasOpenAIKey />
-      <ConfirmationModal
-        isOpen={confirmationModal.isOpen}
-        title={confirmationModal.title}
-        message={confirmationModal.message}
-        type={confirmationModal.type}
-        onClose={() => setConfirmationModal({ ...confirmationModal, isOpen: false })}
-      />
-      
       {/* Top Header Bar */}
       <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-4 bg-white dark:bg-neutral-950 flex-shrink-0">
         <div className="flex items-center justify-center h-8 w-8">
@@ -345,249 +339,273 @@ export default function Chat() {
         <div className="flex-1 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24 max-h-[calc(100vh-10rem)]">
-          {agentMessages.length === 0 && (
-            <div className="h-full flex items-center justify-center">
-              <Card className="p-6 max-w-md mx-auto bg-neutral-100 dark:bg-neutral-900">
-                <div className="text-center space-y-4">
-                  <div className="bg-[#F48120]/10 text-[#F48120] rounded-full p-3 inline-flex">
-                    <RobotIcon size={24} />
+            {agentMessages.length === 0 && (
+              <div className="h-full flex items-center justify-center">
+                <Card className="p-6 max-w-md mx-auto bg-neutral-100 dark:bg-neutral-900">
+                  <div className="text-center space-y-4">
+                    <div className="bg-[#F48120]/10 text-[#F48120] rounded-full p-3 inline-flex">
+                      <RobotIcon size={24} />
+                    </div>
+                    <h3 className="font-semibold text-lg">
+                      Welcome to Gatekeeper AI
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      Start a conversation with your AI assistant. Try asking
+                      about:
+                    </p>
+                    <ul className="text-sm text-left space-y-2">
+                      <li className="flex items-center gap-2">
+                        <span className="text-[#F48120]">•</span>
+                        <span>Creating, editing or closing github issues</span>
+                      </li>
+                    </ul>
                   </div>
-                  <h3 className="font-semibold text-lg">Welcome to Gatekeeper AI</h3>
-                  <p className="text-muted-foreground text-sm">
-                    Start a conversation with your AI assistant. Try asking
-                    about:
-                  </p>
-                  <ul className="text-sm text-left space-y-2">
-                    <li className="flex items-center gap-2">
-                      <span className="text-[#F48120]">•</span>
-                      <span>Creating, editing or closing github issues</span>
-                    </li>
-                  </ul>
-                </div>
-              </Card>
-            </div>
-          )}
+                </Card>
+              </div>
+            )}
 
-          {agentMessages.map((m, index) => {
-            const isUser = m.role === "user";
-            const showAvatar =
-              index === 0 || agentMessages[index - 1]?.role !== m.role;
+            {agentMessages.map((m, index) => {
+              const isUser = m.role === "user";
+              const showAvatar =
+                index === 0 || agentMessages[index - 1]?.role !== m.role;
 
-            return (
-              <div key={m.id}>
-                {showDebug && (
-                  <pre className="text-xs text-muted-foreground overflow-scroll">
-                    {JSON.stringify(m, null, 2)}
-                  </pre>
-                )}
-                <div
-                  className={`flex ${isUser ? "justify-end" : "justify-start"}`}
-                >
+              return (
+                <div key={m.id}>
+                  {showDebug && (
+                    <pre className="text-xs text-muted-foreground overflow-scroll">
+                      {JSON.stringify(m, null, 2)}
+                    </pre>
+                  )}
                   <div
-                    className={`flex gap-2 max-w-[85%] ${
-                      isUser ? "flex-row-reverse" : "flex-row"
-                    }`}
+                    className={`flex ${isUser ? "justify-end" : "justify-start"}`}
                   >
-                    {showAvatar && !isUser ? (
-                      <Avatar username={"AI"} className="shrink-0" />
-                    ) : (
-                      !isUser && <div className="w-8" />
-                    )}
+                    <div
+                      className={`flex gap-2 max-w-[85%] ${
+                        isUser ? "flex-row-reverse" : "flex-row"
+                      }`}
+                    >
+                      {showAvatar && !isUser ? (
+                        <Avatar username={"AI"} className="shrink-0" />
+                      ) : (
+                        !isUser && <div className="w-8" />
+                      )}
 
-                    <div>
                       <div>
-                        {m.parts?.map((part, i) => {
-                          if (part.type === "text") {
-                            return (
-                              // biome-ignore lint/suspicious/noArrayIndexKey: immutable index
-                              <div key={i}>
-                                <Card
-                                  className={`p-3 rounded-md bg-neutral-100 dark:bg-neutral-900 ${
-                                    isUser
-                                      ? "rounded-br-none"
-                                      : "rounded-bl-none border-assistant-border"
-                                  } ${
-                                    part.text.startsWith("scheduled message")
-                                      ? "border-accent/50"
-                                      : ""
-                                  } relative`}
-                                >
-                                  {part.text.startsWith(
-                                    "scheduled message"
-                                  ) && (
-                                    <span className="absolute -top-3 -left-2 text-base">
-                                      🕒
-                                    </span>
-                                  )}
-                                  <MemoizedMarkdown
-                                    id={`${m.id}-${i}`}
-                                    content={part.text.replace(
-                                      /^scheduled message: /,
-                                      ""
+                        <div>
+                          {m.parts?.map((part, i) => {
+                            if (part.type === "text") {
+                              return (
+                                // biome-ignore lint/suspicious/noArrayIndexKey: immutable index
+                                <div key={i}>
+                                  <Card
+                                    className={`p-3 rounded-md bg-neutral-100 dark:bg-neutral-900 ${
+                                      isUser
+                                        ? "rounded-br-none"
+                                        : "rounded-bl-none border-assistant-border"
+                                    } ${
+                                      part.text.startsWith("scheduled message")
+                                        ? "border-accent/50"
+                                        : ""
+                                    } relative`}
+                                  >
+                                    {part.text.startsWith(
+                                      "scheduled message"
+                                    ) && (
+                                      <span className="absolute -top-3 -left-2 text-base">
+                                        🕒
+                                      </span>
                                     )}
-                                  />
-                                </Card>
-                                <p
-                                  className={`text-xs text-muted-foreground mt-1 ${
-                                    isUser ? "text-right" : "text-left"
-                                  }`}
-                                >
-                                  {formatTime(
-                                    m.metadata?.createdAt
-                                      ? new Date(m.metadata.createdAt)
-                                      : new Date()
-                                  )}
-                                </p>
-                              </div>
-                            );
-                          }
-
-                          if (
-                            isStaticToolUIPart(part) &&
-                            m.role === "assistant"
-                          ) {
-                            const toolCallId = part.toolCallId;
-                            const toolName = part.type.replace("tool-", "");
-                            const needsConfirmation =
-                              toolsRequiringConfirmation.includes(
-                                toolName as keyof typeof tools
+                                    <MemoizedMarkdown
+                                      id={`${m.id}-${i}`}
+                                      content={part.text.replace(
+                                        /^scheduled message: /,
+                                        ""
+                                      )}
+                                    />
+                                  </Card>
+                                  <p
+                                    className={`text-xs text-muted-foreground mt-1 ${
+                                      isUser ? "text-right" : "text-left"
+                                    }`}
+                                  >
+                                    {formatTime(
+                                      m.metadata?.createdAt
+                                        ? new Date(m.metadata.createdAt)
+                                        : new Date()
+                                    )}
+                                  </p>
+                                </div>
                               );
+                            }
 
-                            return (
-                              <ToolInvocationCard
-                                // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe here as the array is static
-                                key={`${toolCallId}-${i}`}
-                                toolUIPart={part}
-                                toolCallId={toolCallId}
-                                needsConfirmation={needsConfirmation}
-                                onSubmit={({ toolCallId, result }) => {
-                                  // If this is a tool requiring confirmation and there are edits, use the edited values
-                                  let finalResult = result;
-                                  if (needsConfirmation && pendingToolCallConfirmation && (previewEdits.title !== undefined || previewEdits.body !== undefined || previewEdits.labels !== undefined)) {
-                                    // Build the edited input from the original plus the edits
-                                    const originalInput = (part as any).input || {};
-                                    finalResult = {
-                                      ...originalInput,
-                                      ...(previewEdits.title !== undefined && { title: previewEdits.title }),
-                                      ...(previewEdits.body !== undefined && { body: previewEdits.body }),
-                                      ...(previewEdits.labels !== undefined && { labels: previewEdits.labels })
-                                    };
-                                  }
-                                  addToolResult({
-                                    tool: toolName,
-                                    toolCallId,
-                                    output: finalResult
-                                  });
-                                }}
-                                addToolResult={(toolCallId, result) => {
-                                  addToolResult({
-                                    tool: toolName,
-                                    toolCallId,
-                                    output: result
-                                  });
-                                }}
-                              />
-                            );
-                          }
-                          return null;
-                        })}
+                            if (
+                              isStaticToolUIPart(part) &&
+                              m.role === "assistant"
+                            ) {
+                              const toolCallId = part.toolCallId;
+                              const toolName = part.type.replace("tool-", "");
+                              const needsConfirmation =
+                                toolsRequiringConfirmation.includes(
+                                  toolName as keyof typeof tools
+                                );
+
+                              return (
+                                <ToolInvocationCard
+                                  // biome-ignore lint/suspicious/noArrayIndexKey: using index is safe here as the array is static
+                                  key={`${toolCallId}-${i}`}
+                                  toolUIPart={part}
+                                  toolCallId={toolCallId}
+                                  needsConfirmation={needsConfirmation}
+                                  onSubmit={({ toolCallId, result }) => {
+                                    // If this is a tool requiring confirmation and there are edits, use the edited values
+                                    let finalResult = result;
+                                    if (
+                                      needsConfirmation &&
+                                      pendingToolCallConfirmation &&
+                                      (previewEdits.title !== undefined ||
+                                        previewEdits.body !== undefined ||
+                                        previewEdits.labels !== undefined)
+                                    ) {
+                                      // Build the edited input from the original plus the edits
+                                      const originalInput =
+                                        (part as any).input || {};
+                                      finalResult = {
+                                        ...originalInput,
+                                        ...(previewEdits.title !==
+                                          undefined && {
+                                          title: previewEdits.title
+                                        }),
+                                        ...(previewEdits.body !== undefined && {
+                                          body: previewEdits.body
+                                        }),
+                                        ...(previewEdits.labels !==
+                                          undefined && {
+                                          labels: previewEdits.labels
+                                        })
+                                      };
+                                    }
+                                    addToolResult({
+                                      tool: toolName,
+                                      toolCallId,
+                                      output: finalResult
+                                    });
+                                  }}
+                                  addToolResult={(toolCallId, result) => {
+                                    addToolResult({
+                                      tool: toolName,
+                                      toolCallId,
+                                      output: result
+                                    });
+                                  }}
+                                />
+                              );
+                            }
+                            return null;
+                          })}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-          <div ref={messagesEndRef} />
+              );
+            })}
+            <div ref={messagesEndRef} />
           </div>
 
-        {/* Input Area */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            handleAgentSubmit(e, {
-              annotations: {
-                hello: "world"
-              }
-            });
-            setTextareaHeight("auto"); // Reset height after submission
-          }}
-          className="p-3 bg-neutral-50 absolute bottom-0 left-0 right-0 z-10 border-t border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900"
-        >
-          <div className="flex items-center gap-2">
-            <div className="flex-1 relative">
-              <Textarea
-                disabled={pendingToolCallConfirmation}
-                placeholder={
-                  pendingToolCallConfirmation
-                    ? "Please respond to the tool confirmation above..."
-                    : "Send a message..."
+          {/* Input Area */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAgentSubmit(e, {
+                annotations: {
+                  hello: "world"
                 }
-                className="flex w-full border border-neutral-200 dark:border-neutral-700 px-3 py-2  ring-offset-background placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-700 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl text-base! pb-10 dark:bg-neutral-900"
-                value={agentInput}
-                onChange={(e) => {
-                  handleAgentInputChange(e);
-                  // Auto-resize the textarea
-                  e.target.style.height = "auto";
-                  e.target.style.height = `${e.target.scrollHeight}px`;
-                  setTextareaHeight(`${e.target.scrollHeight}px`);
-                }}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "Enter" &&
-                    !e.shiftKey &&
-                    !e.nativeEvent.isComposing
-                  ) {
-                    e.preventDefault();
-                    handleAgentSubmit(e as unknown as React.FormEvent);
-                    setTextareaHeight("auto"); // Reset height on Enter submission
+              });
+              setTextareaHeight("auto"); // Reset height after submission
+            }}
+            className="p-3 bg-neutral-50 absolute bottom-0 left-0 right-0 z-10 border-t border-neutral-300 dark:border-neutral-800 dark:bg-neutral-900"
+          >
+            <div className="flex items-center gap-2">
+              <div className="flex-1 relative">
+                <Textarea
+                  disabled={pendingToolCallConfirmation}
+                  placeholder={
+                    pendingToolCallConfirmation
+                      ? "Please respond to the tool confirmation above..."
+                      : "Send a message..."
                   }
-                }}
-                rows={2}
-                style={{ height: textareaHeight }}
-              />
-              <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
-                {status === "submitted" || status === "streaming" ? (
-                  <button
-                    type="button"
-                    onClick={stop}
-                    className="inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-1.5 h-fit border border-neutral-200 dark:border-neutral-800"
-                    aria-label="Stop generation"
-                  >
-                    <StopIcon size={16} />
-                  </button>
-                ) : (
-                  <button
-                    type="submit"
-                    className="inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-1.5 h-fit border border-neutral-200 dark:border-neutral-800"
-                    disabled={pendingToolCallConfirmation || !agentInput.trim()}
-                    aria-label="Send message"
-                  >
-                    <PaperPlaneTiltIcon size={16} />
-                  </button>
-                )}
+                  className="flex w-full border border-neutral-200 dark:border-neutral-700 px-3 py-2  ring-offset-background placeholder:text-neutral-500 dark:placeholder:text-neutral-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-300 dark:focus-visible:ring-neutral-700 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-neutral-900 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm min-h-[24px] max-h-[calc(75dvh)] overflow-hidden resize-none rounded-2xl text-base! pb-10 dark:bg-neutral-900"
+                  value={agentInput}
+                  onChange={(e) => {
+                    handleAgentInputChange(e);
+                    // Auto-resize the textarea
+                    e.target.style.height = "auto";
+                    e.target.style.height = `${e.target.scrollHeight}px`;
+                    setTextareaHeight(`${e.target.scrollHeight}px`);
+                  }}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === "Enter" &&
+                      !e.shiftKey &&
+                      !e.nativeEvent.isComposing
+                    ) {
+                      e.preventDefault();
+                      handleAgentSubmit(e as unknown as React.FormEvent);
+                      setTextareaHeight("auto"); // Reset height on Enter submission
+                    }
+                  }}
+                  rows={2}
+                  style={{ height: textareaHeight }}
+                />
+                <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
+                  {status === "submitted" || status === "streaming" ? (
+                    <button
+                      type="button"
+                      onClick={stop}
+                      className="inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-1.5 h-fit border border-neutral-200 dark:border-neutral-800"
+                      aria-label="Stop generation"
+                    >
+                      <StopIcon size={16} />
+                    </button>
+                  ) : (
+                    <button
+                      type="submit"
+                      className="inline-flex items-center cursor-pointer justify-center gap-2 whitespace-nowrap text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 rounded-full p-1.5 h-fit border border-neutral-200 dark:border-neutral-800"
+                      disabled={
+                        pendingToolCallConfirmation || !agentInput.trim()
+                      }
+                      aria-label="Send message"
+                    >
+                      <PaperPlaneTiltIcon size={16} />
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
-          </div>
-        </form>
+          </form>
         </div>
 
         {/* GitHub Issues Section */}
         <div className="w-80 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
-          <GitHubIssues onIssueSelect={setSelectedIssue} refreshTrigger={refreshTrigger} />
+          <GitHubIssues
+            onIssueSelect={setSelectedIssue}
+            refreshTrigger={refreshTrigger}
+          />
         </div>
 
         {/* GitHub Issue Details Section */}
         <div className="w-96 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
-          <GitHubIssueDetails 
-            issue={previewIssue || selectedIssue} 
+          <GitHubIssueDetails
+            issue={previewIssue || selectedIssue}
             onClose={() => setSelectedIssue(null)}
             isPreview={previewIssue !== null}
             isEditPreview={isEditPreview}
             previewEdits={previewEdits}
-            onEditTitle={(title) => setPreviewEdits({...previewEdits, title})}
-            onEditBody={(body) => setPreviewEdits({...previewEdits, body})}
-            onEditLabels={(labels) => setPreviewEdits({...previewEdits, labels})}
+            onEditTitle={(title) => setPreviewEdits({ ...previewEdits, title })}
+            onEditBody={(body) => setPreviewEdits({ ...previewEdits, body })}
+            onEditLabels={(labels) =>
+              setPreviewEdits({ ...previewEdits, labels })
+            }
           />
         </div>
       </div>

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
-import { Card } from '@/components/card/Card';
-import { Loader } from '@/components/loader/Loader';
-import { ExclamationMarkIcon} from '@phosphor-icons/react';
-import type { GitHubIssue, IssueOperationResult } from '@/lib/interfaces';
+import { useEffect, useState } from "react";
+import { Card } from "@/components/card/Card";
+import { Loader } from "@/components/loader/Loader";
+import { ExclamationMarkIcon } from "@phosphor-icons/react";
+import type { GitHubIssue, IssueOperationResult } from "@/lib/interfaces";
 
 interface GitHubIssuesProps {
   repoUrl?: string;
@@ -28,18 +28,17 @@ export const GitHubIssues = ({
         setError(null);
 
         // Fetch from the API endpoint
-        const response = (await fetch('/api/github-issues', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/api/github-issues", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ repoUrl, maxIssues })
-        }));
-        
-        const data = ((await response.json()) as IssueOperationResult).data as GitHubIssue[];
+        });
+
+        const data = ((await response.json()) as IssueOperationResult)
+          .data as GitHubIssue[];
         setIssues(data);
       } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to fetch issues'
-        );
+        setError(err instanceof Error ? err.message : "Failed to fetch issues");
       } finally {
         setLoading(false);
       }
@@ -84,7 +83,7 @@ export const GitHubIssues = ({
       <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 sticky top-0 z-10 bg-neutral-50 dark:bg-neutral-900">
         <h2 className="font-semibold text-base">Open Issues</h2>
         <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-          {issues.length} issue{issues.length !== 1 ? 's' : ''}
+          {issues.length} issue{issues.length !== 1 ? "s" : ""}
         </p>
       </div>
 
@@ -117,7 +116,7 @@ export const GitHubIssues = ({
                         #{issue.number}: {issue.title}
                       </h3>
                       <p className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">
-                        {issue.user.login} •{' '}
+                        {issue.user.login} •{" "}
                         {new Date(issue.updated_at).toLocaleDateString()}
                       </p>
                       {issue.labels.length > 0 && (

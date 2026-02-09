@@ -1,21 +1,24 @@
-import type { RepositoryData } from '@/lib/interfaces';
-import { useEffect, useState } from 'react';
+import type { RepositoryData } from "@/lib/interfaces";
+import { useEffect, useState } from "react";
 
 export function RepositoryInfo() {
   const [repoInfo, setRepoInfo] = useState<RepositoryData | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch('/api/repository-info')
-      .then(res => res.json())
+    fetch("/api/repository-info")
+      .then((res) => res.json())
       .then((data: unknown) => {
-        if (typeof data === 'object' && data !== null && 'error' in data) {
-          console.error('Failed to fetch repo info:', (data as { error: string }).error);
-        } else if (typeof data === 'object' && data !== null) {
+        if (typeof data === "object" && data !== null && "error" in data) {
+          console.error(
+            "Failed to fetch repo info:",
+            (data as { error: string }).error
+          );
+        } else if (typeof data === "object" && data !== null) {
           setRepoInfo(data as RepositoryData);
         }
       })
-      .catch(err => console.error('Error fetching repo info:', err))
+      .catch((err) => console.error("Error fetching repo info:", err))
       .finally(() => setLoading(false));
   }, []);
 
