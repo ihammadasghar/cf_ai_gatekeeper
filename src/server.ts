@@ -1,10 +1,6 @@
-import { routeAgentRequest, type Schedule } from "agents";
-
-import { getSchedulePrompt } from "agents/schedule";
-
+import { routeAgentRequest } from "agents";
 import { AIChatAgent } from "@cloudflare/ai-chat";
 import {
-  generateId,
   streamText,
   type StreamTextOnFinishCallback,
   stepCountIs,
@@ -13,44 +9,28 @@ import {
   createUIMessageStreamResponse,
   type ToolSet
 } from "ai";
-import { createWorkersAI } from "workers-ai-provider";
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
+import { getSystemPrompt } from "@/lib/prompts";
 import { env } from "cloudflare:workers";
+import { fetchIssueTemplate, getRepoFromEnv } from "./lib/github-utils";
+import { getIssues } from "./lib/github-issues";
+import { google } from "@ai-sdk/google";
+// import { createWorkersAI } from "workers-ai-provider";
+// const workersai = createWorkersAI({ binding: env.AI });
+// const model = workersai.model("@cf/meta/llama-3-8b-instruct-v0.1");
 
-const workersai = createWorkersAI({ binding: env.AI });
+const model = google("gemini-2.5-flash");
 
-const model = workersai("@cf/meta/llama-3.2-3b-instruct");
-// Cloudflare AI Gateway
-// const openai = createOpenAI({
-//   apiKey: env.OPENAI_API_KEY,
-//   baseURL: env.GATEWAY_BASE_URL,
-// });
-
-/**
- * Chat Agent implementation that handles real-time AI chat interactions
- */
 export class Chat extends AIChatAgent<Env> {
-  /**
-   * Handles incoming chat messages and manages the response stream
-   */
   async onChatMessage(
     onFinish: StreamTextOnFinishCallback<ToolSet>,
     options?: { abortSignal?: AbortSignal }
   ) {
-    // const mcpConnection = await this.mcp.connect(
-    //   "https://path-to-mcp-server/sse"
-    // );
-
-    // Collect all tools, including MCP tools
-    const allTools = {
-      ...tools,
-      ...this.mcp.getAITools()
-    };
+    const allTools = tools;
 
     const stream = createUIMessageStream({
       execute: async ({ writer }) => {
-        // Clean up incomplete tool calls to prevent API errors
         const cleanedMessages = cleanupMessages(this.messages);
 
         // Process any pending tool calls from previous messages
@@ -62,19 +42,16 @@ export class Chat extends AIChatAgent<Env> {
           executions
         });
 
+        const template = await fetchIssueTemplate(
+          env.GITHUB_TOKEN,
+          env.GITHUB_REPO_URL
+        );
+
         const result = streamText({
-          system: `You are a helpful assistant that can do various tasks... 
-
-${getSchedulePrompt({ date: new Date() })}
-
-If the user asks to schedule a task, use the schedule tool to schedule the task.
-`,
-
+          system: getSystemPrompt(template),
           messages: await convertToModelMessages(processedMessages),
           model,
           tools: allTools,
-          // Type boundary: streamText expects specific tool types, but base class uses ToolSet
-          // This is safe because our tools satisfy ToolSet interface (verified by 'satisfies' in tools.ts)
           onFinish: onFinish as unknown as StreamTextOnFinishCallback<
             typeof allTools
           >,
@@ -88,26 +65,6 @@ If the user asks to schedule a task, use the schedule tool to schedule the task.
 
     return createUIMessageStreamResponse({ stream });
   }
-  async executeTask(description: string, _task: Schedule<string>) {
-    void _task;
-
-    await this.saveMessages([
-      ...this.messages,
-      {
-        id: generateId(),
-        role: "user",
-        parts: [
-          {
-            type: "text",
-            text: `Running scheduled task: ${description}`
-          }
-        ],
-        metadata: {
-          createdAt: new Date()
-        }
-      }
-    ]);
-  }
 }
 
 /**
@@ -118,12 +75,63 @@ export default {
     void _ctx;
 
     const url = new URL(request.url);
+    const [owner, repo] = getRepoFromEnv(env.GITHUB_REPO_URL);
+    if (url.pathname === "/api/github-issues") {
+      const issues = await getIssues({
+        token: env.GITHUB_TOKEN,
+        owner,
+        repo,
+        query: "state:open is:issue"
+      });
+      return Response.json(issues);
+    }
 
     if (url.pathname === "/check-open-ai-key") {
       const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
       return Response.json({
         success: hasOpenAIKey
       });
+    }
+
+    if (url.pathname === "/api/repository-info") {
+      try {
+        const headers: HeadersInit = {
+          Authorization: `Bearer ${env.GITHUB_TOKEN}`,
+          Accept: "application/vnd.github.v3+json",
+          "User-Agent": "Cloudflare-Worker-Gatekeeper"
+        };
+
+        // Fetch repository details from GitHub API
+        const repoResponse = await fetch(
+          `https://api.github.com/repos/${owner}/${repo}`,
+          { headers }
+        );
+
+        if (!repoResponse.ok) {
+          throw new Error(
+            `GitHub API error: ${repoResponse.status} ${repoResponse.statusText}`
+          );
+        }
+
+        const repoData = (await repoResponse.json()) as Record<string, unknown>;
+        return Response.json({
+          owner,
+          repo,
+          url: env.GITHUB_REPO_URL,
+          description: repoData.description as string | undefined,
+          isPrivate: repoData.private as boolean,
+          stars: repoData.stargazers_count as number,
+          language: repoData.language as string | undefined
+        });
+      } catch (error) {
+        console.error("Repository info fetch error:", error);
+        return Response.json(
+          {
+            error: error instanceof Error ? error.message : "Unknown error"
+          },
+          { status: 500 }
+        );
+      }
     }
     if (!process.env.OPENAI_API_KEY) {
       console.error(
