@@ -6,6 +6,23 @@
 
 ---
 
+### [2026-02-09] | Task: Generate clear prompts for the agent and good descriptions for the tool
+
+**Status:** ✅ Completed
+**Agent Used:** Claude 4.5
+
+**The Prompt:**
+
+> "I want to write clear and consise prompts for my gatekeeper ai chat bot that manages github issues, for it's role and the tools that it has access to. Add a clear structure to the role prompt, but adding sections (for example, the tools available and when to use them), additonally organize tool usage into separete subsections. Create an explicit decision rules section. The prompts should be not too long either to make it scannable and not too much information. The terminology should be consitent. Add also a section about the tone and the quality with which the chat should respond."
+
+NOTE: `tools.ts` and `server.ts` files were given as context
+
+**The Result/Outcome:**
+
+- Added `src/lib/prompts.ts`
+
+---
+
 ### [2026-02-05] | Task: Generate general_task.md template
 
 **Status:** ✅ Completed
