@@ -12,15 +12,15 @@ Issue Arcitect AI is a GitHub App powered by Cloudflare Agents. Its primary job 
 
 - **Runtime:** Node.js (via Cloudflare Workers)
 - **Frameworks:** Cloudflare Agents (`agents-sdk`), GitHub Apps (`octokit`)
-- **Package Manager:** `pnpm` (Never use `npm` or `yarn`)
+- **Package Manager:** `npm` (Never use `pnpm` or `yarn`)
 - **Deployment:** `wrangler`
 
 ### Canonical Commands
 
-- **Dev:** `pnpm run dev` (Wrangler local development)
-- **Deploy:** `pnpm run deploy` (Deploy to Cloudflare)
-- **Lint:** `pnpm run lint` / `pnpm run format`
-- **Type Check:** `pnpm exec tsc --noEmit`
+- **Dev:** `npm run dev` (Wrangler local development)
+- **Deploy:** `npm run deploy` (Deploy to Cloudflare)
+- **Lint:** `npm run lint` / `npm run format`
+- **Type Check:** `npm exec tsc --noEmit`
 
 ---
 
@@ -50,14 +50,6 @@ Issue Arcitect AI is a GitHub App powered by Cloudflare Agents. Its primary job 
 | **Constants**             | `UPPER_SNAKE_CASE` | `MAX_RETRIES`     |
 | **Files**                 | `kebab-case.ts`    | `github-logic.ts` |
 
----
-
-## 🏗 Repository Architecture
-
-- `src/index.ts`: The **Brain**. Contains the `Agent` class and Worker fetch handler.
-- `src/github.ts`: The **Hands**. Encapsulates all Octokit and GitHub API logic.
-- `wrangler.toml`: The **Skeleton**. Consult this for environment variables and AI model bindings.
-- `.github/ISSUE_TEMPLATE.md`: The **Target**. Your code often populates or validates this file.
 
 ---
 
