@@ -26,11 +26,10 @@ import { TOOL_DESCRIPTIONS, ISSUE_BODY_GUIDELINES } from "@/lib/prompts";
  * and then posts the issue directly to the repository
  */
 
-const template = await getIssueTemplate(env.GITHUB_TOKEN, env.GITHUB_REPO_URL);
 const createTicketForGithubRepo = tool({
   description: TOOL_DESCRIPTIONS.createIssue.description,
   inputSchema: z.object({
-    body: z.string().describe(`${ISSUE_BODY_GUIDELINES} ${template}`),
+    body: z.string().describe(`${ISSUE_BODY_GUIDELINES}`),
     title: z.string().describe(TOOL_DESCRIPTIONS.createIssue.titleDescription),
     labels: z.string().describe(TOOL_DESCRIPTIONS.createIssue.labelsDescription)
   })
@@ -42,10 +41,7 @@ const editTicketForGithubRepo = tool({
     issueNumber: z
       .number()
       .describe(TOOL_DESCRIPTIONS.closeIssue.numberDescription),
-    body: z
-      .string()
-      .describe(`${ISSUE_BODY_GUIDELINES} ${template}`)
-      .optional(),
+    body: z.string().describe(`${ISSUE_BODY_GUIDELINES}`).optional(),
     title: z
       .string()
       .describe(TOOL_DESCRIPTIONS.editIssue.titleDescription)
@@ -158,6 +154,26 @@ const listRepositoryLabels = tool({
   }
 });
 
+const getGithubIssueTemplate = tool({
+  description: TOOL_DESCRIPTIONS.getIssueTemplate.description,
+  inputSchema: z.object({
+    templateName: z
+      .string()
+      .describe(TOOL_DESCRIPTIONS.getIssueTemplate.templateNameDescription)
+  }),
+  execute: async ({ templateName }: { templateName: string }) => {
+    const template = await getIssueTemplate(
+      env.GITHUB_TOKEN,
+      env.GITHUB_REPO_URL,
+      templateName
+    );
+    if (!template) {
+      return `Error fetching issue template.`;
+    }
+    return template;
+  }
+});
+
 export const tools = {
   createTicketForGithubRepo,
   editTicketForGithubRepo,
@@ -165,7 +181,8 @@ export const tools = {
   searchIssuesForGithubRepo,
   getIssueDetails,
   addCommentToGithubIssue,
-  listRepositoryLabels
+  listRepositoryLabels,
+  getGithubIssueTemplate
 } satisfies ToolSet;
 
 /**

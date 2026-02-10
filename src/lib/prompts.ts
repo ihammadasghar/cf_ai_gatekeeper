@@ -41,6 +41,12 @@ export const TOOL_DESCRIPTIONS = {
     numberDescription: "The number of the issue to comment on",
     commentBodyDescription:
       "The content of the comment to add (can include Markdown)"
+  },
+  getIssueTemplate: {
+    description:
+      "Fetches the content of a specific issue template from the repository",
+    templateNameDescription:
+      "The name of the template to fetch (could be one of three options: 'general_task', 'bug_report', 'feature_request')."
   }
 };
 
@@ -48,14 +54,13 @@ export const TOOL_DESCRIPTIONS = {
  * Issue body quality standards and formatting rules
  * Injected into tool descriptions to ensure consistent issue quality
  */
-export const ISSUE_BODY_GUIDELINES = `Issue body must follow this template exactly:
+export const ISSUE_BODY_GUIDELINES = `Issue body must follow one of issue template that you should fetch using the getIssueTemplate tool.:
 - Provide detailed descriptions for each section (not vague placeholders)
 - Explain the "why" behind requests, not just the "what"
 - Include acceptance criteria and technical notes where applicable
 - Use clean Markdown formatting with headers and bullet points
 - Avoid promotional language or excessive emojis
-
-Template to follow:`;
+`;
 
 /**
  * System prompt for the Gatekeeper.ai chatbot
@@ -74,6 +79,7 @@ You have access to three tools:
 4. **searchIssuesForGithubRepo** - Search existing issues to prevent duplicates
 5. **getIssueDetails** - Fetch full details of a specific issue
 6. **addCommentToGithubIssue** - Add a comment to an existing issue
+7. **getIssueTemplate** - Fetch the content of a specific issue template from the repository
 
 ## When to Use Each Tool
 
@@ -116,7 +122,11 @@ When the user says: "comment", "add a note", or "clarify" with an issue number a
 - Call addCommentToGithubIssue with:
   - issueNumber: The issue number to comment on
   - commentBody: The content of the comment (can include Markdown)
-  
+
+## Get Issue Template
+- Always fetch the issue template using getIssueTemplate before creating or editing issues to ensure compliance with repository standards
+- Use the template content to guide the structure and quality of issue bodies
+
 ## Decision Rules
 
 **DO create an issue if:**

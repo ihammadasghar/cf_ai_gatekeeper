@@ -314,7 +314,8 @@ export const closeGitHubIssue = async (params: {
  */
 export const getIssueTemplate = async (
   token: string,
-  url: string
+  url: string,
+  templateName: string
 ): Promise<string> => {
   const headers = getGitHubHeaders(token);
 
@@ -322,7 +323,7 @@ export const getIssueTemplate = async (
 
   const filesFetchUrl = `https://raw.githubusercontent.com/${owner}/${repo}/main`;
   const template = await fetch(
-    `${filesFetchUrl}/.github/ISSUE_TEMPLATE/general_task.md`,
+    `${filesFetchUrl}/.github/ISSUE_TEMPLATE/${templateName}.md`,
     {
       headers
     }
