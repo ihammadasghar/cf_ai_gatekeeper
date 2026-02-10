@@ -14,6 +14,7 @@ import { tools, executions } from "./tools";
 import { getRepoFromEnv } from "./lib/github-utils";
 import { getIssues } from "./lib/github-issues";
 import { google } from "@ai-sdk/google";
+import { systemPrompt } from "./lib/prompts";
 // import { createWorkersAI } from "workers-ai-provider";
 // const workersai = createWorkersAI({ binding: env.AI });
 // const model = workersai.model("@cf/meta/llama-3-8b-instruct-v0.1");
