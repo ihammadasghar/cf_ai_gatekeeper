@@ -102,9 +102,10 @@ export const GitHubIssues = ({
                 key={issue.id}
                 onClick={() => onIssueSelect?.(issue)}
                 className="w-full block text-left group"
+                type="button"
               >
                 <Card className="p-3 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer">
-                  <div className="flex gap-2 items-start">
+                  <div className="flex gap-2 itesms-start">
                     <img
                       src={issue.user.avatar_url}
                       alt={issue.user.login}
