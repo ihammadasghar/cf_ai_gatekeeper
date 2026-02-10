@@ -102,6 +102,7 @@ export const GitHubIssueDetails = ({
             shape="square"
             className="rounded-full h-8 w-8 shrink-0"
             onClick={onClose}
+            type="button"
           >
             <XIcon size={16} />
           </Button>

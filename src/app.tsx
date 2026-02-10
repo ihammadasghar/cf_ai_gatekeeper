@@ -51,8 +51,7 @@ export default function Chat() {
   const [showDebug, setShowDebug] = useState(false);
   const [textareaHeight, setTextareaHeight] = useState("auto");
   const [selectedIssue, setSelectedIssue] = useState<GitHubIssue | null>(null);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
-  const [confirmationModal, setConfirmationModal] = useState<{
+  const [_confirmationModal, setConfirmationModal] = useState<{
     isOpen: boolean;
     title: string;
     message: string;
@@ -164,7 +163,6 @@ export default function Chat() {
               isOpen: true,
               ...modalProps
             });
-            setRefreshTrigger((prev) => prev + 1);
           }
         }
       }
@@ -207,7 +205,7 @@ export default function Chat() {
           toolsRequiringConfirmation.includes(
             part.type.replace("tool-", "") as keyof typeof tools
           )
-      ) as any;
+      );
 
       if (
         (toolPart?.type === "tool-createTicketForGithubRepo" ||
@@ -457,37 +455,10 @@ export default function Chat() {
                                   toolCallId={toolCallId}
                                   needsConfirmation={needsConfirmation}
                                   onSubmit={({ toolCallId, result }) => {
-                                    // If this is a tool requiring confirmation and there are edits, use the edited values
-                                    let finalResult = result;
-                                    if (
-                                      needsConfirmation &&
-                                      pendingToolCallConfirmation &&
-                                      (previewEdits.title !== undefined ||
-                                        previewEdits.body !== undefined ||
-                                        previewEdits.labels !== undefined)
-                                    ) {
-                                      // Build the edited input from the original plus the edits
-                                      const originalInput =
-                                        (part as any).input || {};
-                                      finalResult = {
-                                        ...originalInput,
-                                        ...(previewEdits.title !==
-                                          undefined && {
-                                          title: previewEdits.title
-                                        }),
-                                        ...(previewEdits.body !== undefined && {
-                                          body: previewEdits.body
-                                        }),
-                                        ...(previewEdits.labels !==
-                                          undefined && {
-                                          labels: previewEdits.labels
-                                        })
-                                      };
-                                    }
                                     addToolResult({
                                       tool: toolName,
                                       toolCallId,
-                                      output: finalResult
+                                      output: result
                                     });
                                   }}
                                   addToolResult={(toolCallId, result) => {
@@ -587,10 +558,7 @@ export default function Chat() {
 
         {/* GitHub Issues Section */}
         <div className="w-80 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
-          <GitHubIssues
-            onIssueSelect={setSelectedIssue}
-            refreshTrigger={refreshTrigger}
-          />
+          <GitHubIssues onIssueSelect={setSelectedIssue} />
         </div>
 
         {/* GitHub Issue Details Section */}

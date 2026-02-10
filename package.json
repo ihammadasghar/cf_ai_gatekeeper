@@ -15,7 +15,8 @@
     "postinstall": "patch-package",
     "prepare": "husky",
     "lint": "eslint .",
-    "cm": "cz"
+    "cm": "cz",
+    "login": "wrangler login"
   },
   "keywords": [
     "cloudflare",

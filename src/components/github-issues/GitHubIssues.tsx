@@ -14,8 +14,7 @@ interface GitHubIssuesProps {
 export const GitHubIssues = ({
   repoUrl,
   maxIssues = 10,
-  onIssueSelect,
-  refreshTrigger = 0
+  onIssueSelect
 }: GitHubIssuesProps) => {
   const [issues, setIssues] = useState<GitHubIssue[]>([]);
   const [loading, setLoading] = useState(true);
@@ -45,7 +44,7 @@ export const GitHubIssues = ({
     };
 
     fetchIssues();
-  }, [repoUrl, maxIssues, refreshTrigger]);
+  }, [repoUrl, maxIssues]);
 
   if (loading) {
     return (
