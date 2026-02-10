@@ -1,7 +1,6 @@
 # 🛡️ Gatekeeper AI
 
-Try it now live:
-<a href="https://gatekeeper-ai.ihammadasghar.workers.dev/">![pages logo](pages-logo.png)</a>
+Try it now live: [Cloudflare Pages](https://gatekeeper-ai.ihammadasghar.workers.dev/)
 
 A context-aware AI agent that bridges the gap between vague user reports and actionable engineering tasks. By referencing your repository's internal documentation, Gatekeeper AI ensures every ticket is structured, labeled, and complete before it ever hits the backlog. It is made levraging Cloudflare Workers, Durable Objects and Agents SDK.
 
