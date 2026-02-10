@@ -11,10 +11,8 @@ import {
 } from "ai";
 import { processToolCalls, cleanupMessages } from "./utils";
 import { tools, executions } from "./tools";
-import { getSystemPrompt } from "@/lib/prompts";
-import { env } from "cloudflare:workers";
 import { getRepoFromEnv } from "./lib/github-utils";
-import { getIssues, getIssueTemplate } from "./lib/github-issues";
+import { getIssues } from "./lib/github-issues";
 import { google } from "@ai-sdk/google";
 // import { createWorkersAI } from "workers-ai-provider";
 // const workersai = createWorkersAI({ binding: env.AI });
@@ -41,14 +39,8 @@ export class Chat extends AIChatAgent<Env> {
           tools: allTools,
           executions
         });
-
-        const template = await getIssueTemplate(
-          env.GITHUB_TOKEN,
-          env.GITHUB_REPO_URL
-        );
-
         const result = streamText({
-          system: getSystemPrompt(template),
+          system: systemPrompt,
           messages: await convertToModelMessages(processedMessages),
           model,
           tools: allTools,

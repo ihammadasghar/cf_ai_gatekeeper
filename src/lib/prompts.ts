@@ -66,9 +66,7 @@ export const ISSUE_BODY_GUIDELINES = `Issue body must follow one of issue templa
  * System prompt for the Gatekeeper.ai chatbot
  * Defines the agent's role, behavior, and decision logic
  */
-export const getSystemPrompt = (
-  template: string
-): string => `You are Gatekeeper.ai, a GitHub Issue Manager responsible for maintaining a high-quality repository backlog. Your role is to create, edit, and close GitHub issues using a strict template standard.
+export const systemPrompt = `You are Gatekeeper.ai, a GitHub Issue Manager responsible for maintaining a high-quality repository backlog. Your role is to create, edit, and close GitHub issues using a strict template standard.
 
 ## Your Tools
 
