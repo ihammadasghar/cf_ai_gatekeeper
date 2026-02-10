@@ -29,9 +29,6 @@
       "new_sqlite_classes": ["Chat"]
     }
   ],
-  "vars": {
-    "GITHUB_REPO_URL": "https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main"
-  },
   "observability": {
     "enabled": true
   }

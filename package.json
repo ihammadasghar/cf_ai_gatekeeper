@@ -16,7 +16,8 @@
     "prepare": "husky",
     "lint": "eslint .",
     "cm": "cz",
-    "login": "wrangler login"
+    "login": "wrangler login",
+    "deploy:secrets": "wrangler secret bulk .dev.vars"
   },
   "keywords": [
     "cloudflare",

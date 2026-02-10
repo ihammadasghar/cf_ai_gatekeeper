@@ -240,9 +240,8 @@ export default function Chat() {
 
   return (
     <div className="h-screen w-full flex flex-col bg-fixed overflow-hidden">
-      <HasGeminiKey />
-      {/* Top Header Bar */}
-      <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-4 bg-white dark:bg-neutral-950 flex-shrink-0">
+      <HasGeminiKey />=
+      <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-4 bg-white dark:bg-neutral-950 flex-shrink-0 z-20">
         <div className="flex items-center justify-center h-8 w-8">
           <svg
             width="28px"
@@ -296,11 +295,8 @@ export default function Chat() {
           <TrashIcon size={20} />
         </Button>
       </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-row gap-4 p-4 overflow-hidden">
-        {/* Chat Section */}
-        <div className="flex-1 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
+      <div className="flex-1 flex flex-col xl:flex-row gap-4 p-4 overflow-y-auto xl:overflow-hidden">
+        <div className="flex-1 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800 w-full min-h-[75vh] xl:min-h-0 flex-shrink-0">
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 pb-24 max-h-[calc(100vh-10rem)]">
             {agentMessages.length === 0 && (
@@ -314,13 +310,20 @@ export default function Chat() {
                       Welcome to Gatekeeper AI
                     </h3>
                     <p className="text-muted-foreground text-sm">
-                      Start a conversation with your AI assistant. Try asking
-                      about:
+                      Start a conversation with Gatekeeper AI. Try asking about:
                     </p>
                     <ul className="text-sm text-left space-y-2">
                       <li className="flex items-center gap-2">
                         <span className="text-[#F48120]">•</span>
                         <span>Creating, editing or closing github issues</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-[#F48120]">•</span>
+                        <span>Searching through the repository backlog</span>
+                      </li>
+                      <li className="flex items-center gap-2">
+                        <span className="text-[#F48120]">•</span>
+                        <span>Adding comments to issues</span>
                       </li>
                     </ul>
                   </div>
@@ -449,7 +452,6 @@ export default function Chat() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input Area */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -521,14 +523,11 @@ export default function Chat() {
             </div>
           </form>
         </div>
-
-        {/* GitHub Issues Section */}
-        <div className="w-80 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
+        <div className="w-full xl:w-80 h-[500px] xl:h-auto flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800 flex-shrink-0">
           <GitHubIssues onIssueSelect={setSelectedIssue} />
         </div>
 
-        {/* GitHub Issue Details Section */}
-        <div className="w-96 flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800">
+        <div className="w-full xl:w-96 h-[500px] xl:h-auto flex flex-col shadow-xl rounded-md overflow-hidden relative border border-neutral-300 dark:border-neutral-800 flex-shrink-0">
           <GitHubIssueDetails
             issue={previewIssue || selectedIssue}
             onClose={() => setSelectedIssue(null)}

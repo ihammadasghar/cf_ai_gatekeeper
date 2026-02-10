@@ -14,7 +14,7 @@ import { tools, executions } from "./tools";
 import { getRepoFromEnv } from "./lib/github-utils";
 import { getIssues } from "./lib/github-issues";
 import { google } from "@ai-sdk/google";
-import { systemPrompt } from "./lib/prompts";
+import { SYSTEM_PROMPT } from "./lib/prompts";
 // import { createWorkersAI } from "workers-ai-provider";
 // const workersai = createWorkersAI({ binding: env.AI });
 // const model = workersai.model("@cf/meta/llama-3-8b-instruct-v0.1");
@@ -41,7 +41,7 @@ export class Chat extends AIChatAgent<Env> {
           executions
         });
         const result = streamText({
-          system: systemPrompt,
+          system: SYSTEM_PROMPT,
           messages: await convertToModelMessages(processedMessages),
           model,
           tools: allTools,
@@ -126,7 +126,7 @@ export default {
         );
       }
     }
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
       console.error(
         "GOOGLE_GENERATIVE_AI_API_KEY is not set, don't forget to set it locally in .dev.vars, and use `wrangler secret bulk .dev.vars` to upload it to production"
       );
