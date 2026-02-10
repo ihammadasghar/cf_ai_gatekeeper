@@ -79,8 +79,8 @@ export default {
       return Response.json(issues);
     }
 
-    if (url.pathname === "/check-open-ai-key") {
-      const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
+    if (url.pathname === "/check-gemini-key") {
+      const hasOpenAIKey = !!process.env.GOOGLE_GENERATIVE_AI_API_KEY;
       return Response.json({
         success: hasOpenAIKey
       });
@@ -128,7 +128,7 @@ export default {
     }
     if (!process.env.OPENAI_API_KEY) {
       console.error(
-        "OPENAI_API_KEY is not set, don't forget to set it locally in .dev.vars, and use `wrangler secret bulk .dev.vars` to upload it to production"
+        "GOOGLE_GENERATIVE_AI_API_KEY is not set, don't forget to set it locally in .dev.vars, and use `wrangler secret bulk .dev.vars` to upload it to production"
       );
     }
     return (
