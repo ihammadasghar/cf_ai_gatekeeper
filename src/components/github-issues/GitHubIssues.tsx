@@ -14,38 +14,41 @@ interface GitHubIssuesProps {
 export const GitHubIssues = ({
   repoUrl,
   maxIssues = 10,
-  onIssueSelect,
+  onIssueSelect
 }: GitHubIssuesProps) => {
   const [issues, setIssues] = useState<GitHubIssue[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchIssues = useCallback(async (isManualRefresh = false) => {
-    try {
-      if (isManualRefresh) setRefreshing(true);
-      else setLoading(true);
-      
-      setError(null);
+  const fetchIssues = useCallback(
+    async (isManualRefresh = false) => {
+      try {
+        if (isManualRefresh) setRefreshing(true);
+        else setLoading(true);
 
-      const response = await fetch("/api/github-issues", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ repoUrl, maxIssues })
-      });
+        setError(null);
 
-      if (!response.ok) throw new Error("Failed to sync with GitHub");
+        const response = await fetch("/api/github-issues", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ repoUrl, maxIssues })
+        });
 
-      const data = ((await response.json()) as SearchIssuesResponse)
-        .issues as GitHubIssue[];
-      setIssues(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch issues");
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, [repoUrl, maxIssues]);
+        if (!response.ok) throw new Error("Failed to sync with GitHub");
+
+        const data = ((await response.json()) as SearchIssuesResponse)
+          .issues as GitHubIssue[];
+        setIssues(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to fetch issues");
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
+      }
+    },
+    [repoUrl, maxIssues]
+  );
 
   useEffect(() => {
     fetchIssues();
@@ -68,7 +71,7 @@ export const GitHubIssues = ({
             {issues.length} issue{issues.length !== 1 ? "s" : ""}
           </p>
         </div>
-        
+
         <Button
           variant="ghost"
           size="sm"
@@ -77,24 +80,25 @@ export const GitHubIssues = ({
           disabled={refreshing}
           className="rounded-full"
           aria-label="Refresh issues"
+          type="button"
         >
-          <ArrowsClockwise 
-            size={18} 
-            className={`${refreshing ? "animate-spin text-[#F48120]" : ""}`} 
+          <ArrowsClockwise
+            size={18}
+            className={`${refreshing ? "animate-spin text-[#F48120]" : ""}`}
           />
         </Button>
       </div>
 
       <div className="flex-1 overflow-y-auto">
         {error ? (
-           <div className="p-4">
-             <Card className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3">
-               <div className="flex gap-2 text-sm text-red-800 dark:text-red-300">
-                 <ExclamationMarkIcon size={18} className="shrink-0" />
-                 <p>{error}</p>
-               </div>
-             </Card>
-           </div>
+          <div className="p-4">
+            <Card className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-3">
+              <div className="flex gap-2 text-sm text-red-800 dark:text-red-300">
+                <ExclamationMarkIcon size={18} className="shrink-0" />
+                <p>{error}</p>
+              </div>
+            </Card>
+          </div>
         ) : issues.length === 0 ? (
           <div className="flex items-center justify-center h-full p-4">
             <Card className="text-center bg-neutral-100 dark:bg-neutral-900 p-4">
@@ -113,7 +117,6 @@ export const GitHubIssues = ({
                 type="button"
               >
                 <Card className="p-3 bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors cursor-pointer">
-                  {/* ... Rest of your issue card JSX remains the same ... */}
                   <div className="flex gap-2 items-start">
                     <img
                       src={issue.user.avatar_url}
