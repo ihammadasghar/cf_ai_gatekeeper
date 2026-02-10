@@ -568,12 +568,6 @@ export default function Chat() {
             onClose={() => setSelectedIssue(null)}
             isPreview={previewIssue !== null}
             isEditPreview={isEditPreview}
-            previewEdits={previewEdits}
-            onEditTitle={(title) => setPreviewEdits({ ...previewEdits, title })}
-            onEditBody={(body) => setPreviewEdits({ ...previewEdits, body })}
-            onEditLabels={(labels) =>
-              setPreviewEdits({ ...previewEdits, labels })
-            }
           />
         </div>
       </div>

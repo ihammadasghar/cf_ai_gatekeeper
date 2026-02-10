@@ -24,11 +24,6 @@ interface GitHubIssueDetailsProps {
   onClose: () => void;
   isPreview?: boolean;
   isEditPreview?: boolean;
-  onSubmitEdit?: (data: {
-    title: string;
-    body: string;
-    labels: string[];
-  }) => void | Promise<void>;
 }
 
 export const GitHubIssueDetails = ({
