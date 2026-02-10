@@ -11,7 +11,11 @@ import {
   createGitHubIssue,
   editGitHubIssue,
   closeGitHubIssue,
-  getIssueTemplate
+  getIssueTemplate,
+  getIssues,
+  getGitHubIssue,
+  addCommentToIssue,
+  getRepositoryLabels
 } from "@/lib/github-issues";
 import { TOOL_DESCRIPTIONS, ISSUE_BODY_GUIDELINES } from "@/lib/prompts";
 
@@ -66,10 +70,102 @@ const closeTicketForGithubRepo = tool({
   })
 });
 
+/**
+ * Search tool to prevent duplicate issues
+ */
+const searchIssuesForGithubRepo = tool({
+  description: TOOL_DESCRIPTIONS.searchIssues.description,
+  inputSchema: z.object({
+    query: z.string().describe(TOOL_DESCRIPTIONS.searchIssues.queryDescription)
+  }),
+  execute: async ({ query }: { query: string }) => {
+    const [owner, repo] = getRepoFromEnv(env.GITHUB_REPO_URL);
+    const result = await getIssues({
+      token: env.GITHUB_TOKEN,
+      owner,
+      repo,
+      query
+    });
+    if (!result.issues) {
+      return `Error searching issues: ${result.message}`;
+    }
+    return (
+      result.issues
+        .map((issue) => `#${issue.number}: ${issue.title}`)
+        .join("\n") || "No matching issues found."
+    );
+  }
+});
+
+/**
+ * Tool to read a specific issue's full content and comments
+ */
+const getIssueDetails = tool({
+  description: TOOL_DESCRIPTIONS.getIssueDetails.description,
+  inputSchema: z.object({
+    issueNumber: z
+      .number()
+      .describe(TOOL_DESCRIPTIONS.getIssueDetails.numberDescription)
+  }),
+  execute: async ({ issueNumber }: { issueNumber: number }) => {
+    const [owner, repo] = getRepoFromEnv(env.GITHUB_REPO_URL);
+    const result = await getGitHubIssue({
+      token: env.GITHUB_TOKEN,
+      owner,
+      repo,
+      issueNumber
+    });
+    if (!result.issue) {
+      return `Error fetching issue details: ${result.message}`;
+    }
+    const { title, body, labels } = result.issue;
+    return `#${issueNumber}: ${title}\nLabels: ${labels.map((l) => l.name).join(", ")}\n\n${body}`;
+  }
+});
+
+/**
+ * Tool to participate in the conversation
+ */
+const addCommentToGithubIssue = tool({
+  description: TOOL_DESCRIPTIONS.addComment.description,
+  inputSchema: z.object({
+    issueNumber: z
+      .number()
+      .describe(TOOL_DESCRIPTIONS.addComment.numberDescription),
+    body: z
+      .string()
+      .describe(TOOL_DESCRIPTIONS.addComment.commentBodyDescription)
+  })
+});
+
+/**
+ * Taxonomy tool
+ */
+const listRepositoryLabels = tool({
+  description: "Returns all valid labels available in this repository.",
+  inputSchema: z.object({}),
+  execute: async () => {
+    const [owner, repo] = getRepoFromEnv(env.GITHUB_REPO_URL);
+    const response = await getRepositoryLabels({
+      token: env.GITHUB_TOKEN,
+      owner,
+      repo
+    });
+    if (!response.labels) {
+      return `Error fetching labels: ${response.message}`;
+    }
+    return response.labels.map((l) => l.name).join(", ") || "No labels found.";
+  }
+});
+
 export const tools = {
   createTicketForGithubRepo,
   editTicketForGithubRepo,
-  closeTicketForGithubRepo
+  closeTicketForGithubRepo,
+  searchIssuesForGithubRepo,
+  getIssueDetails,
+  addCommentToGithubIssue,
+  listRepositoryLabels
 } satisfies ToolSet;
 
 /**
@@ -138,5 +234,35 @@ export const executions = {
       reason
     });
     return result.message;
+  },
+
+  addCommentToGithubIssue: async ({
+    issueNumber,
+    body
+  }: {
+    issueNumber: number;
+    body: string;
+  }) => {
+    const [owner, repo] = getRepoFromEnv(env.GITHUB_REPO_URL);
+    const result = await getGitHubIssue({
+      token: env.GITHUB_TOKEN,
+      owner,
+      repo,
+      issueNumber
+    });
+    if (!result.issue) {
+      return `Error finding issue to comment on: ${result.message}`;
+    }
+    const commentResult = await addCommentToIssue({
+      token: env.GITHUB_TOKEN,
+      owner,
+      repo,
+      issueNumber,
+      body
+    });
+    if (!commentResult.success) {
+      return `Error adding comment: ${commentResult.message}`;
+    }
+    return commentResult.message;
   }
 };

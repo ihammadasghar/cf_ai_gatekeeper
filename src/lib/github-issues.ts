@@ -3,7 +3,18 @@ import {
   getRepoFromEnv,
   parseLabelsString
 } from "./github-utils";
-import type { GitHubIssue, IssueOperationResult } from "./interfaces";
+import type {
+  AddCommentResponse,
+  CloseIssueResponse,
+  CreateIssueResponse,
+  EditIssueResponse,
+  GitHubComment,
+  GitHubIssue,
+  GitHubLabel,
+  IssueDetailsResponse,
+  RepositoryLabelsResponse,
+  SearchIssuesResponse
+} from "./interfaces";
 import { logger } from "./logger";
 
 /**
@@ -14,10 +25,10 @@ export const getIssues = async (params: {
   owner: string;
   repo: string;
   query: string; // e.g., "state:open label:bug"
-}): Promise<IssueOperationResult> => {
+}): Promise<SearchIssuesResponse> => {
   const { owner, repo, query } = params;
   // Construct a scoped search query
-  const fullQuery = `repo:${owner}/${repo} ${query}`;
+  const fullQuery = `repo:${owner}/${repo} ${query} is:issue`;
   logger.info("Starting: Search GitHub Issues", {
     owner,
     repo,
@@ -42,7 +53,7 @@ export const getIssues = async (params: {
     return {
       success: true,
       message: `Found ${data.total_count} matching issues.`,
-      data: data.items as GitHubIssue[]
+      issues: data.items as GitHubIssue[]
     };
   } catch (error) {
     logger.error("Failed to search issues", {
@@ -63,17 +74,29 @@ export const getGitHubIssue = async (params: {
   owner: string;
   repo: string;
   issueNumber: number;
-}): Promise<GitHubIssue | null> => {
+}): Promise<IssueDetailsResponse> => {
   const { token, owner, repo, issueNumber } = params;
   try {
     const response = await fetch(
       `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}`,
       { headers: getGitHubHeaders(token) }
     );
-    if (!response.ok) return null;
-    return (await response.json()) as GitHubIssue;
-  } catch {
-    return null;
+    if (!response.ok) {
+      const errorText = await response.text();
+      return {
+        success: false,
+        message: `Failed to fetch issue #${issueNumber}: ${response.status}`,
+        error: errorText
+      };
+    }
+    const issue = (await response.json()) as GitHubIssue;
+    return { success: true, message: "Issue fetched successfully", issue };
+  } catch (error: unknown) {
+    return {
+      success: false,
+      message: `Exception fetching issue #${issueNumber}`,
+      error: String(error)
+    };
   }
 };
 
@@ -84,7 +107,7 @@ export const createGitHubIssue = async (params: {
   title: string;
   body: string;
   labels?: string;
-}): Promise<IssueOperationResult> => {
+}): Promise<CreateIssueResponse> => {
   const { owner, repo, title, body, labels: labelsStr } = params;
   logger.info("Starting: Create GitHub Issue", { owner, repo, title });
 
@@ -105,8 +128,6 @@ export const createGitHubIssue = async (params: {
       }
     );
 
-    // Note: Verification for 'Create' is difficult because we don't have a number yet.
-    // If you get a 500 on Create, it's safer to report the error.
     if (!response.ok) {
       const errorData = await response.text();
       logger.error("GitHub API Error: Create Issue", {
@@ -145,7 +166,7 @@ export const editGitHubIssue = async (params: {
   title?: string;
   body?: string;
   labels?: string;
-}): Promise<IssueOperationResult> => {
+}): Promise<EditIssueResponse> => {
   const {
     token,
     owner,
@@ -178,12 +199,14 @@ export const editGitHubIssue = async (params: {
     // Verification Logic for 500
     if (response.status === 500) {
       logger.info("Received 500 on Edit, verifying update...", { issueNumber });
-      const verifiedIssue = await getGitHubIssue({
-        token,
-        owner,
-        repo,
-        issueNumber
-      });
+      const verifiedIssue = (
+        await getGitHubIssue({
+          token,
+          owner,
+          repo,
+          issueNumber
+        })
+      ).issue;
 
       // If we can fetch it and the title matches, the update likely succeeded
       if (verifiedIssue && (title ? verifiedIssue.title === title : true)) {
@@ -221,7 +244,7 @@ export const closeGitHubIssue = async (params: {
   repo: string;
   issueNumber: number;
   reason?: string;
-}): Promise<IssueOperationResult> => {
+}): Promise<CloseIssueResponse> => {
   const { token, owner, repo, issueNumber } = params;
   logger.info("Starting: Close GitHub Issue", { owner, repo, issueNumber });
 
@@ -243,12 +266,14 @@ export const closeGitHubIssue = async (params: {
       logger.info("Received 500 on Close, verifying status...", {
         issueNumber
       });
-      const verifiedIssue = await getGitHubIssue({
-        token,
-        owner,
-        repo,
-        issueNumber
-      });
+      const verifiedIssue = (
+        await getGitHubIssue({
+          token,
+          owner,
+          repo,
+          issueNumber
+        })
+      ).issue;
       if (verifiedIssue?.state === "closed") {
         return {
           success: true,
@@ -303,4 +328,114 @@ export const getIssueTemplate = async (
     }
   ).then((res) => res.text());
   return template;
+};
+
+/**
+ * Fetch all available labels for a repository
+ * @returns An array of label names or an error message
+ * @throws Error if fetching fails
+ */
+export const getRepositoryLabels = async (params: {
+  token: string;
+  owner: string;
+  repo: string;
+}): Promise<RepositoryLabelsResponse> => {
+  const { owner, repo } = params;
+  logger.info("Starting: Get Repository Labels", { owner, repo });
+
+  try {
+    const response = await fetch(
+      `https://api.github.com/repos/${owner}/${repo}/labels`,
+      { headers: getGitHubHeaders(params.token) }
+    );
+
+    if (!response.ok) {
+      throw new Error(`GitHub API Error: ${response.status}`);
+    }
+
+    const labels = (await response.json()) as GitHubLabel[];
+    return {
+      success: true,
+      message: `Found ${labels.length} labels.`,
+      labels
+    };
+  } catch (error) {
+    logger.error("Failed to fetch labels", {
+      owner,
+      repo,
+      error: String(error)
+    });
+    return {
+      success: false,
+      message: "Could not fetch labels",
+      error: String(error)
+    };
+  }
+};
+
+/**
+ * Add a comment to an existing issue
+ */
+export const addCommentToIssue = async (params: {
+  token: string;
+  owner: string;
+  repo: string;
+  issueNumber: number;
+  body: string;
+}): Promise<AddCommentResponse> => {
+  const { token, owner, repo, issueNumber, body } = params;
+  const url = `https://api.github.com/repos/${owner}/${repo}/issues/${issueNumber}/comments`;
+  logger.info("Starting: Add Comment", { owner, repo, issueNumber });
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: getGitHubHeaders(token),
+      body: JSON.stringify({ body })
+    });
+
+    // Verification for 500
+    if (response.status === 500) {
+      logger.info("Received 500 on Comment, verifying...", { issueNumber });
+      // Fetch latest 5 comments to see if ours made it
+      const verifyRes = await fetch(
+        `${url}?per_page=5&sort=created&direction=desc`,
+        {
+          headers: getGitHubHeaders(token)
+        }
+      );
+      const comments = (await verifyRes.json()) as GitHubComment[];
+      const found = comments.find((c) => c.body === body);
+
+      if (found) {
+        return {
+          success: true,
+          message: "✅ Comment added (Verified after 500).",
+          comment: found
+        };
+      }
+    }
+
+    if (!response.ok) {
+      const errorData = await response.text();
+      return {
+        success: false,
+        message: "Failed to add comment",
+        error: errorData
+      };
+    }
+
+    const comment = (await response.json()) as GitHubComment;
+    return {
+      success: true,
+      message: "✅ Comment added successfully!",
+      comment
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Exception during comment",
+      error: String(error)
+    };
+  }
 };

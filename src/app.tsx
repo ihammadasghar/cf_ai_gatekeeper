@@ -5,10 +5,6 @@ import { isStaticToolUIPart } from "ai";
 import { useAgentChat } from "@cloudflare/ai-chat/react";
 import type { UIMessage } from "@ai-sdk/react";
 import type { tools } from "./tools";
-import {
-  parseToolCompletionMessage,
-  getConfirmationModalProps
-} from "@/lib/tool-message-parser";
 import { createPreviewIssue } from "@/lib/tool-preview";
 
 // Component imports
@@ -39,7 +35,8 @@ import type { GitHubIssue } from "./lib/interfaces";
 const toolsRequiringConfirmation: (keyof typeof tools)[] = [
   "createTicketForGithubRepo",
   "editTicketForGithubRepo",
-  "closeTicketForGithubRepo"
+  "closeTicketForGithubRepo",
+  "addCommentToGithubIssue"
 ];
 
 export default function Chat() {
@@ -51,17 +48,7 @@ export default function Chat() {
   const [showDebug, setShowDebug] = useState(false);
   const [textareaHeight, setTextareaHeight] = useState("auto");
   const [selectedIssue, setSelectedIssue] = useState<GitHubIssue | null>(null);
-  const [_confirmationModal, setConfirmationModal] = useState<{
-    isOpen: boolean;
-    title: string;
-    message: string;
-    type: "success" | "info" | "warning" | "error";
-  }>({
-    isOpen: false,
-    title: "",
-    message: "",
-    type: "success"
-  });
+
   // State for tracking edits to the preview
   const [previewEdits, setPreviewEdits] = useState<{
     title?: string;
@@ -147,27 +134,6 @@ export default function Chat() {
   useEffect(() => {
     agentMessages.length > 0 && scrollToBottom();
   }, [agentMessages, scrollToBottom]);
-
-  // Monitor tool completions and refresh issues list
-  useEffect(() => {
-    const lastMessage = agentMessages[agentMessages.length - 1];
-
-    if (lastMessage?.role === "assistant" && lastMessage.parts) {
-      for (const part of lastMessage.parts) {
-        if (part.type === "text") {
-          const result = parseToolCompletionMessage(part.text);
-          const modalProps = getConfirmationModalProps(result);
-
-          if (modalProps) {
-            setConfirmationModal({
-              isOpen: true,
-              ...modalProps
-            });
-          }
-        }
-      }
-    }
-  }, [agentMessages]);
 
   const pendingToolCallConfirmation = agentMessages.some((m: UIMessage) =>
     m.parts?.some(

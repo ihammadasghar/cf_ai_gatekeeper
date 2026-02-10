@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "@/components/card/Card";
 import { Loader } from "@/components/loader/Loader";
 import { ExclamationMarkIcon } from "@phosphor-icons/react";
-import type { GitHubIssue, IssueOperationResult } from "@/lib/interfaces";
+import type { GitHubIssue, SearchIssuesResponse } from "@/lib/interfaces";
 
 interface GitHubIssuesProps {
   repoUrl?: string;
@@ -33,8 +33,8 @@ export const GitHubIssues = ({
           body: JSON.stringify({ repoUrl, maxIssues })
         });
 
-        const data = ((await response.json()) as IssueOperationResult)
-          .data as GitHubIssue[];
+        const data = ((await response.json()) as SearchIssuesResponse)
+          .issues as GitHubIssue[];
         setIssues(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to fetch issues");

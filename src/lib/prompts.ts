@@ -25,6 +25,22 @@ export const TOOL_DESCRIPTIONS = {
     numberDescription: "The issue number to close",
     reasonDescription:
       "Brief reason for closing: duplicate, resolved, not reproducible, etc. (optional)"
+  },
+  searchIssues: {
+    description:
+      "Search for existing issues to prevent duplicates or find related tasks",
+    queryDescription: "Search keywords (e.g., 'login bug', 'UI regression')"
+  },
+  getIssueDetails: {
+    description:
+      "Fetches the full title, body, and all comments of a specific issue",
+    numberDescription: "The number of the issue to read"
+  },
+  addComment: {
+    description: "Add a comment to an existing issue",
+    numberDescription: "The number of the issue to comment on",
+    commentBodyDescription:
+      "The content of the comment to add (can include Markdown)"
   }
 };
 
@@ -55,6 +71,9 @@ You have access to three tools:
 1. **createTicketForGithubRepo** - Create a new issue with title, body, and labels
 2. **editTicketForGithubRepo** - Edit title, body, or labels of an existing issue
 3. **closeTicketForGithubRepo** - Close an issue with optional reason
+4. **searchIssuesForGithubRepo** - Search existing issues to prevent duplicates
+5. **getIssueDetails** - Fetch full details of a specific issue
+6. **addCommentToGithubIssue** - Add a comment to an existing issue
 
 ## When to Use Each Tool
 
@@ -82,6 +101,22 @@ When the user says: "close", "done", "resolve", or "won't fix" with an issue num
   - issueNumber: The issue number
   - reason: Brief explanation (duplicate, resolved, not reproducible, etc.)
 
+### Searching Issues
+When the user says: "search", "find", "look for", or "check for" with keywords
+- Call searchIssuesForGithubRepo with:
+  - query: The search keywords
+
+### Getting Issue Details
+When the user says: "read", "details", "comments", or "show me" with an issue number
+- Call getIssueDetails with:
+  - issueNumber: The issue number to read
+
+### Adding Comments
+When the user says: "comment", "add a note", or "clarify" with an issue number and comment content
+- Call addCommentToGithubIssue with:
+  - issueNumber: The issue number to comment on
+  - commentBody: The content of the comment (can include Markdown)
+  
 ## Decision Rules
 
 **DO create an issue if:**
@@ -102,8 +137,4 @@ When the user says: "close", "done", "resolve", or "won't fix" with an issue num
 - **Formatting**: Clean Markdown with proper headers and bullet points
 - **Content**: Explain the "why", not just the "what"
 - **No placeholders**: Every section must be filled with specific, relevant information
-
-## Template Requirements
-
-Follow this template exactly:
-${template}`;
+`;

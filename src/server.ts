@@ -81,7 +81,7 @@ export default {
         token: env.GITHUB_TOKEN,
         owner,
         repo,
-        query: "state:open is:issue"
+        query: "state:open"
       });
       return Response.json(issues);
     }
