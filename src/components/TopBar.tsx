@@ -1,14 +1,14 @@
-import { BugIcon, MoonIcon, SunIcon, TrashIcon } from '@phosphor-icons/react';
-import { useState } from 'react';
-import { Button } from '@/components/button/Button';
-import { Toggle } from '@/components/toggle/Toggle';
-import { RepositoryInfo } from '@/components/repo-info/RepositoryInfo';
-import { DropdownMenu } from '@/components/dropdown/DropdownMenu';
+import { BugIcon, MoonIcon, SunIcon, TrashIcon } from "@phosphor-icons/react";
+import { useState } from "react";
+import { Button } from "@/components/button/Button";
+import { Toggle } from "@/components/toggle/Toggle";
+import { RepositoryInfo } from "@/components/repo-info/RepositoryInfo";
+import { DropdownMenu } from "@/components/dropdown/DropdownMenu";
 
 interface TopBarProps {
   showDebug: boolean;
   setShowDebug: (value: boolean | ((prev: boolean) => boolean)) => void;
-  theme: 'dark' | 'light';
+  theme: "dark" | "light";
   toggleTheme: () => void;
   clearHistory: () => void;
 }
@@ -69,7 +69,7 @@ export function TopBar({
           className="rounded-full h-9 w-9"
           onClick={toggleTheme}
         >
-          {theme === 'dark' ? <SunIcon size={20} /> : <MoonIcon size={20} />}
+          {theme === "dark" ? <SunIcon size={20} /> : <MoonIcon size={20} />}
         </Button>
 
         <Button
@@ -90,27 +90,32 @@ export function TopBar({
           sideOffset={8}
           MenuItems={[
             {
-              type: 'title',
+              type: "title",
               titleContent: <RepositoryInfo />
             },
             {
-              type: 'divider'
+              type: "divider"
             },
             {
-              type: 'button',
-              label: 'Debug Mode',
+              type: "button",
+              label: "Debug Mode",
               icon: <BugIcon weight="bold" />,
               onClick: () => setShowDebug((prev) => !prev)
             },
             {
-              type: 'button',
-              label: theme === 'dark' ? 'Light Theme' : 'Dark Theme',
-              icon: theme === 'dark' ? <SunIcon weight="bold" /> : <MoonIcon weight="bold" />,
+              type: "button",
+              label: theme === "dark" ? "Light Theme" : "Dark Theme",
+              icon:
+                theme === "dark" ? (
+                  <SunIcon weight="bold" />
+                ) : (
+                  <MoonIcon weight="bold" />
+                ),
               onClick: toggleTheme
             },
             {
-              type: 'button',
-              label: 'Clear History',
+              type: "button",
+              label: "Clear History",
               icon: <TrashIcon weight="bold" />,
               onClick: clearHistory
             }

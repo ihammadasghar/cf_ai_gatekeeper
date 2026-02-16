@@ -1,5 +1,5 @@
-import { Card } from '@/components/card/Card';
-import { RobotIcon } from '@phosphor-icons/react';
+import { Card } from "@/components/card/Card";
+import { RobotIcon } from "@phosphor-icons/react";
 
 export function EmptyState() {
   return (
@@ -9,9 +9,7 @@ export function EmptyState() {
           <div className="bg-[#F48120]/10 text-[#F48120] rounded-full p-3 inline-flex">
             <RobotIcon size={24} />
           </div>
-          <h3 className="font-semibold text-lg">
-            Welcome to Gatekeeper AI
-          </h3>
+          <h3 className="font-semibold text-lg">Welcome to Gatekeeper AI</h3>
           <p className="text-muted-foreground text-sm">
             Start a conversation with Gatekeeper AI. Try asking about:
           </p>

@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { Textarea } from '@/components/textarea/Textarea';
-import { PaperPlaneTiltIcon, StopIcon } from '@phosphor-icons/react';
+import { useState } from "react";
+import { Textarea } from "@/components/textarea/Textarea";
+import { PaperPlaneTiltIcon, StopIcon } from "@phosphor-icons/react";
 
 interface ChatInputProps {
   disabled: boolean;
@@ -9,7 +9,7 @@ interface ChatInputProps {
   onInputChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
   onTextareaHeightChange: (height: string) => void;
-  status: 'streaming' | 'submitted' | 'idle' | 'error' | 'ready';
+  status: "streaming" | "submitted" | "idle" | "error" | "ready";
   onStop: () => void;
 }
 
@@ -23,13 +23,13 @@ export function ChatInput({
   status,
   onStop
 }: ChatInputProps) {
-  const [textareaHeight, setTextareaHeight] = useState('auto');
+  const [textareaHeight, setTextareaHeight] = useState("auto");
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     onInputChange(e.target.value);
-    e.target.style.height = 'auto';
+    e.target.style.height = "auto";
     e.target.style.height = `${e.target.scrollHeight}px`;
     setTextareaHeight(`${e.target.scrollHeight}px`);
     onTextareaHeightChange(`${e.target.scrollHeight}px`);
@@ -37,16 +37,12 @@ export function ChatInput({
 
   const handleSubmit = (e: React.FormEvent) => {
     onSubmit(e);
-    setTextareaHeight('auto');
-    onTextareaHeightChange('auto');
+    setTextareaHeight("auto");
+    onTextareaHeightChange("auto");
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (
-      e.key === 'Enter' &&
-      !e.shiftKey &&
-      !e.nativeEvent.isComposing
-    ) {
+    if (e.key === "Enter" && !e.shiftKey && !e.nativeEvent.isComposing) {
       e.preventDefault();
       handleSubmit(e as unknown as React.FormEvent);
     }
@@ -70,7 +66,7 @@ export function ChatInput({
             style={{ height: textareaHeight }}
           />
           <div className="absolute bottom-0 right-0 p-2 w-fit flex flex-row justify-end">
-            {status === 'submitted' || status === 'streaming' ? (
+            {status === "submitted" || status === "streaming" ? (
               <button
                 type="button"
                 onClick={onStop}

@@ -15,7 +15,10 @@ import { MessageList } from "@/components/chat/MessageList";
 import { EmptyState } from "@/components/chat/EmptyState";
 
 // Hook imports
-import { usePendingToolConfirmation, toolsRequiringConfirmation } from "@/hooks/usePendingToolConfirmation";
+import {
+  usePendingToolConfirmation,
+  toolsRequiringConfirmation
+} from "@/hooks/usePendingToolConfirmation";
 
 import type { GitHubIssue } from "./lib/interfaces";
 

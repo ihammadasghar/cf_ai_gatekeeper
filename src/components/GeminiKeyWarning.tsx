@@ -1,6 +1,6 @@
-import { use, type JSX } from 'react';
+import { use, type JSX } from "react";
 
-const hasGeminiKeyPromise = fetch('/check-gemini-key').then((res) =>
+const hasGeminiKeyPromise = fetch("/check-gemini-key").then((res) =>
   res.json<{ success: boolean }>()
 );
 
@@ -40,7 +40,7 @@ export function GeminiKeyWarning(): JSX.Element {
                   work until an Google Gemini API key is configured.
                 </p>
                 <p className="text-neutral-600 dark:text-neutral-300">
-                  Please configure an Gemini API key by setting a{' '}
+                  Please configure an Gemini API key by setting a{" "}
                   <a
                     href="https://developers.cloudflare.com/workers/configuration/secrets/"
                     target="_blank"
@@ -48,13 +48,13 @@ export function GeminiKeyWarning(): JSX.Element {
                     className="text-red-600 dark:text-red-400"
                   >
                     secret
-                  </a>{' '}
-                  named{' '}
+                  </a>{" "}
+                  named{" "}
                   <code className="bg-red-100 dark:bg-red-900/30 px-1.5 py-0.5 rounded text-red-600 dark:text-red-400 font-mono text-sm">
                     GOOGLE_GENERATIVE_AI_API_KEY
                   </code>
                   . <br />
-                  You can also use a different model provider by following these{' '}
+                  You can also use a different model provider by following these{" "}
                   <a
                     href="https://github.com/cloudflare/agents-starter?tab=readme-ov-file#use-a-different-ai-model-provider"
                     target="_blank"
