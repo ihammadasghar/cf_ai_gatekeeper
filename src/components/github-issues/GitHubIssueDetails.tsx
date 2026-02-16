@@ -56,7 +56,7 @@ export const GitHubIssueDetails = ({
   });
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full flex flex-col max-h-[80vh]">
       {/* Header */}
       <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 sticky top-0 z-10 bg-neutral-50 dark:bg-neutral-900">
         <div className="flex items-start justify-between gap-2">
@@ -105,7 +105,7 @@ export const GitHubIssueDetails = ({
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 overflow-y-auto bg-white dark:bg-neutral-950">
         <div className="p-4 space-y-4">
           {/* Author Info / Preview Info */}
           {isPreview ? (
