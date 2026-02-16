@@ -1,5 +1,4 @@
 import { BugIcon, MoonIcon, SunIcon, TrashIcon } from "@phosphor-icons/react";
-import { useState } from "react";
 import { Button } from "@/components/button/Button";
 import { Toggle } from "@/components/toggle/Toggle";
 import { RepositoryInfo } from "@/components/repo-info/RepositoryInfo";
@@ -20,8 +19,6 @@ export function TopBar({
   toggleTheme,
   clearHistory
 }: TopBarProps): React.ReactElement {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
   return (
     <div className="px-4 py-3 border-b border-neutral-300 dark:border-neutral-800 flex items-center gap-4 bg-white dark:bg-neutral-950 flex-shrink-0 z-20">
       <div className="flex items-center justify-center h-8 w-8">

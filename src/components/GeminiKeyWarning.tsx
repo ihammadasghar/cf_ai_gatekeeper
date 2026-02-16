@@ -4,7 +4,7 @@ const hasGeminiKeyPromise = fetch("/check-gemini-key").then((res) =>
   res.json<{ success: boolean }>()
 );
 
-export function GeminiKeyWarning(): JSX.Element {
+export function GeminiKeyWarning(): JSX.Element | null {
   const hasGeminiAiKey = use(hasGeminiKeyPromise);
 
   if (!hasGeminiAiKey.success) {
@@ -71,5 +71,5 @@ export function GeminiKeyWarning(): JSX.Element {
       </div>
     );
   }
-  return <></>;
+  return null;
 }

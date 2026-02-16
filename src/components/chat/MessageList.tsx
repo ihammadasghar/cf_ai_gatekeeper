@@ -57,7 +57,7 @@ export function MessageList({
                     {m.parts?.map((part, i) => {
                       if (part.type === "text") {
                         return (
-                          <div key={i}>
+                          <div key={`${m.id}-text-${i}`}>
                             <Card
                               className={`p-3 rounded-md bg-neutral-100 dark:bg-neutral-900 ${
                                 isUser
@@ -88,8 +88,12 @@ export function MessageList({
                               }`}
                             >
                               {formatTime(
-                                m.metadata?.createdAt
-                                  ? new Date(m.metadata.createdAt)
+                                (m.metadata as Record<string, unknown>)
+                                  ?.createdAt
+                                  ? new Date(
+                                      (m.metadata as Record<string, unknown>)
+                                        .createdAt as string | number
+                                    )
                                   : new Date()
                               )}
                             </p>
@@ -107,7 +111,7 @@ export function MessageList({
 
                         return (
                           <ToolInvocationCard
-                            key={`${toolCallId}-${i}`}
+                            key={toolCallId}
                             toolUIPart={part}
                             toolCallId={toolCallId}
                             needsConfirmation={needsConfirmation}
